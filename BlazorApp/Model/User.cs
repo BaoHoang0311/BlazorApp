@@ -16,7 +16,7 @@ public class User
 
     public static User FromClaimsPrincipal(ClaimsPrincipal principal) => new()
     {
-        Username = principal.FindFirst(ClaimTypes.Name)?.Value ?? "",
+        Username = principal.FindFirst("name")?.Value ?? "",
         Password = principal.FindFirst(ClaimTypes.Hash)?.Value ?? "",
         Age = Convert.ToInt32(principal.FindFirst(nameof(Age))?.Value),
         Roles = principal.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList()

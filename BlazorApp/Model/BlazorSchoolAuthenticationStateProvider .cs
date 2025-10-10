@@ -4,10 +4,20 @@ using System.Security.Claims;
 public class BlazorSchoolAuthenticationStateProvider : AuthenticationStateProvider
 {
     private readonly BlazorSchoolUserService _blazorSchoolUserService;
-
+    public User? CurrentUser { get; set; } = new();
     public BlazorSchoolAuthenticationStateProvider(BlazorSchoolUserService blazorSchoolUserService)
     {
+        AuthenticationStateChanged += OnAuthenticationStateChangedAsync;
         _blazorSchoolUserService = blazorSchoolUserService;
+    }
+    private async void OnAuthenticationStateChangedAsync(Task<AuthenticationState> task)
+    {
+        var authenticationState = await task;
+
+        if (authenticationState is not null)
+        {
+            CurrentUser = User.FromClaimsPrincipal(authenticationState.User);
+        }
     }
     public async Task LoginAsync(string username, string password)
     {
@@ -26,7 +36,7 @@ public class BlazorSchoolAuthenticationStateProvider : AuthenticationStateProvid
         var principal = new ClaimsPrincipal();
         var user = _blazorSchoolUserService.FetchUserFromBrowser();
 
-        if (user is not null)
+        if (!string.IsNullOrEmpty(user.Username))
         {
             var authenticatedUser = await _blazorSchoolUserService.SendAuthenticateRequestAsync(user.Username, user.Password);
 
@@ -35,7 +45,6 @@ public class BlazorSchoolAuthenticationStateProvider : AuthenticationStateProvid
                 principal = authenticatedUser.ToClaimsPrincipal();
             }
         }
-
         return new(principal);
     }
     public void Logout()

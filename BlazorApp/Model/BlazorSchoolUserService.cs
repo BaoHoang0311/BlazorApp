@@ -1,10 +1,17 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Json;
 using System.Security.Claims;
+using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 public class LoginDTO
 {
     public string? Name { get;set;}
     public string? Password { get;set; }
+}
+public class Token
+{
+    public string AccessToken { get; set; }
+    public string RefreshToken { get; set; }
 }
 public class BlazorSchoolUserService
 {
@@ -23,12 +30,13 @@ public class BlazorSchoolUserService
             Name = "bao",
             Password= "bao"
         };
-        var response = await _httpClient.PostAsJsonAsync<LoginDTO>($"http://localhost:5259///login",data);
+        var response = await _httpClient.PostAsJsonAsync<LoginDTO>($"http://localhost:5259/login",data);
 
         if (response.IsSuccessStatusCode)
         {
             string token = await response.Content.ReadAsStringAsync();
-            var claimPrincipal = CreateClaimsPrincipalFromToken(token);
+            var TokenResponse = JsonConvert.DeserializeObject<Token>(token);
+            var claimPrincipal = CreateClaimsPrincipalFromToken(TokenResponse.AccessToken);
             var user = User.FromClaimsPrincipal(claimPrincipal);
             PersistUserToBrowser(token);
 
