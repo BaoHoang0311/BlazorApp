@@ -1,0 +1,12 @@
+<div>
+    <h4>Parent Componentsss</h4>
+    <p>This is the psssaresnt passing data downs. Data1: @Data1 ,ReceivedValue2AtParent: @ReceivedValue2AtParent </p>
+</div>
+
+@code {
+    [CascadingParameter]
+    public string Data1 { get; set; } = "";
+
+    [CascadingParameter(Name = "CascadeParam2")]
+    public string ReceivedValue2AtParent { get; set; } = "";
+}

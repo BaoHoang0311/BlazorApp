@@ -1,0 +1,19 @@
+@page "/file-download-2"
+@inject IJSRuntime JS
+
+<PageTitle>File Download 2</PageTitle>
+
+<h1>File Download Example 2</h1>
+
+<button @onclick="DownloadFileFromURL">
+    Download File From URL
+</button>
+
+@code {
+    private async Task DownloadFileFromURL()
+    {
+        string? fileName = "quote.txt";
+        string? fileURL = "/files/quote.txt";
+        await JS.InvokeVoidAsync(identifier: "triggerFileDownload", fileName, fileURL);
+    }
+}

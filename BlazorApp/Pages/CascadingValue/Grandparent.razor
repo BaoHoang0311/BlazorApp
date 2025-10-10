@@ -1,0 +1,14 @@
+@page "/cascade/Grandparent"
+<div>
+    <h3>Grandparent Components</h3>
+    <CascadingValue Value="Data1">
+        <CascadingValue Value="Data2" Name="CascadeParam2">
+            <Parent />
+        </CascadingValue>
+    </CascadingValue>
+</div>
+
+@code {
+    public string Data1 { get; set; } = "First data.";
+    public string Data2 { get; set; } = "Second data.";
+}
