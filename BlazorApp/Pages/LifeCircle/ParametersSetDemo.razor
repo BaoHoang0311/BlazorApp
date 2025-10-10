@@ -1,0 +1,36 @@
+﻿@page "/parameters-set"
+@inject IJSRuntime JSRuntime
+
+<h2>ParametersSet Demo (Parent Component)</h2>
+
+<p><b>URL Parameter:</b> @UrlParameter</p>
+
+<button class="btn btn-primary" @onclick="ChangeChildParameter">Change Child Parameter</button>
+
+<a class="btn btn-secondary ms-2" href="/parameters-set?UrlParameter=@RandomString()">Change UrlParameter</a>
+
+<hr />
+
+<ChildComponent ComponentParameter="@ChildParameterValue" />
+
+@code {
+    // --- parameter lấy từ URL ---
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string? UrlParameter { get; set; } = "";
+
+    // --- giá trị truyền xuống child ---
+    private string ChildParameterValue { get; set; } = "Initial value";
+
+    protected override void OnParametersSet()
+    {
+        JSRuntime.InvokeVoidAsync("alert", $"Parent: UrlParameter changed → {UrlParameter}");
+    }
+
+    private void ChangeChildParameter()
+    {
+        ChildParameterValue = $"Changed at {DateTime.Now:T}";
+    }
+
+    private string RandomString() => Guid.NewGuid().ToString("N")[..8];
+}

@@ -1,0 +1,16 @@
+﻿@inject IJSRuntime JSRuntime
+
+<div class="border border-primary border-3 m-3 p-2">
+    <h3>Child Component</h3>
+    <p><b>ComponentParameter:</b> @ComponentParameter</p>
+</div>
+
+@code {
+    [Parameter]
+    public string ComponentParameter { get; set; } = "";
+
+    protected override void OnParametersSet()
+    {
+        JSRuntime.InvokeVoidAsync("alert", $"Child: ComponentParameter changed → {ComponentParameter}");
+    }
+}
