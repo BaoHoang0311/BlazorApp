@@ -1,8 +1,10 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using Blazored.LocalStorage;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text.Json.Serialization;
-using Newtonsoft.Json;
 public class LoginDTO
 {
     public string? Name { get;set;}
@@ -16,12 +18,12 @@ public class Token
 public class BlazorSchoolUserService
 {
     private readonly HttpClient _httpClient;
-    private readonly AuthenticationDataMemoryStorage _authenticationDataMemoryStorage;
+    private readonly ILocalStorageService _localStorage;
 
-    public BlazorSchoolUserService(HttpClient httpClient, AuthenticationDataMemoryStorage authenticationDataMemoryStorage)
+    public BlazorSchoolUserService(HttpClient httpClient, ILocalStorageService localStorage)
     {
         _httpClient = httpClient;
-        _authenticationDataMemoryStorage = authenticationDataMemoryStorage;
+        _localStorage = localStorage;
     }
     public async Task<User?> SendAuthenticateRequestAsync(string username, string password)
     {
@@ -37,15 +39,15 @@ public class BlazorSchoolUserService
             string token = await response.Content.ReadAsStringAsync();
             var TokenResponse = JsonConvert.DeserializeObject<Token>(token);
             var claimPrincipal = CreateClaimsPrincipalFromToken(TokenResponse.AccessToken);
-            var user = User.FromClaimsPrincipal(claimPrincipal);
-            PersistUserToBrowser(token);
+            var user = User.UserFromClaimPricipal(claimPrincipal);
+            await PersistUserToBrowser(TokenResponse.AccessToken);
 
             return user;
         }
 
         return null;
     }
-    private ClaimsPrincipal CreateClaimsPrincipalFromToken(string token)
+    public ClaimsPrincipal CreateClaimsPrincipalFromToken(string token)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var identity = new ClaimsIdentity();
@@ -58,13 +60,19 @@ public class BlazorSchoolUserService
 
         return new(identity);
     }
-    private void PersistUserToBrowser(string token) => _authenticationDataMemoryStorage.Token = token;
-    public User? FetchUserFromBrowser()
+    private async Task PersistUserToBrowser(string token) => await _localStorage.SetItemAsStringAsync("Token", token  );
+    public async Task ClearBrowserUserData() => await _localStorage.RemoveItemAsync("Token");
+    // 🟢 Lấy token khi load lại app
+    public async Task<string?> GetTokenFromBrowserAsync()
     {
-        var claimsPrincipal = CreateClaimsPrincipalFromToken(_authenticationDataMemoryStorage.Token);
-        var user = User.FromClaimsPrincipal(claimsPrincipal);
-
-        return user;
+        try
+        {
+            var token = await _localStorage.GetItemAsync<string>("Token");
+            return token;
+        }
+        catch
+        {
+            return null;
+        }
     }
-    public void ClearBrowserUserData() => _authenticationDataMemoryStorage.Token = "";
 }

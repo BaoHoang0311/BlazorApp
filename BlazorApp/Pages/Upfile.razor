@@ -1,0 +1,48 @@
+﻿@page "/upfile"
+@using static BlazorApp.Pages.Weather
+@inject IHttpClientFactory HttpClientFactory
+
+<EditForm Model="FormModel" OnSubmit="SubmitFormAsync">
+    <InputFile OnChange="FileChanged" multiple />
+    <button>Submit</button>
+</EditForm>
+<p role="status">Status: @DataReceived</p>
+
+@code {
+    public ExampleFormModel FormModel { get; set; } = new();
+    public string DataReceived { get; set; } = "";
+
+    public void FileChanged(InputFileChangeEventArgs args)
+    {
+        var files = args.GetMultipleFiles();
+        foreach (var file in files)
+        {
+            FormModel.ExampleFile.Add(file);
+        }
+    }
+
+    public async Task SubmitFormAsync()
+    {
+        var httpClient = HttpClientFactory.CreateClient("Second API");
+        using var formDataContent = new MultipartFormDataContent();
+        foreach (var item in FormModel.ExampleFile)
+        {
+            var stream = item.OpenReadStream(long.MaxValue);
+            var streamContent = new StreamContent(stream);
+            streamContent.Headers.ContentType = new(item.ContentType);
+            formDataContent.Add(streamContent, "ExampleFile", item.Name);
+        }
+        formDataContent.Add(new StringContent("ExampleString"), "test");
+        formDataContent.Add(new StringContent("ExampleString2"), "test2");
+        var message = await httpClient.PostAsync("http://localhost:5259/WeatherForecast/UpFile", formDataContent);
+
+        if (message.IsSuccessStatusCode)
+        {
+            DataReceived = await message.Content.ReadAsStringAsync();
+        }
+        else
+        {
+            DataReceived = "Failed";
+        }
+    }
+}

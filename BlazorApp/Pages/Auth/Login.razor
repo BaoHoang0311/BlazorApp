@@ -2,8 +2,23 @@
 @using Microsoft.AspNetCore.Authorization
 @inject BlazorSchoolAuthenticationStateProvider BlazorSchoolAuthenticationStateProvider
 @attribute [AllowAnonymous]
+@inject NavigationManager Navigation
 
+@code {
+    private string returnURL = "/";
+    protected override void OnInitialized()
+    {
+        var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+        var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
+        var returnParam = query["returnUrl"];
+
+        if (!string.IsNullOrEmpty(returnParam))
+        {
+            returnURL = returnParam;
+        }
+    }
+}
 <h3>Login</h3>
-<button @onclick='_ => BlazorSchoolAuthenticationStateProvider.LoginAsync("blazorschool-admin", "blazorschool")'>Login as Admin</button>
-<button @onclick='_ => BlazorSchoolAuthenticationStateProvider.LoginAsync("blazorschool-normal", "blazorschool")'>Login as Normal User</button>
-<button @onclick='_ => BlazorSchoolAuthenticationStateProvider.LoginAsync("blazorschool-paid", "blazorschool")'>Login as Paid User</button>
+<button @onclick='_ => BlazorSchoolAuthenticationStateProvider.LoginAsync("blazorschool-admin", "blazorschool",returnURL)'>Login as Admin</button>
+<button @onclick='_ => BlazorSchoolAuthenticationStateProvider.LoginAsync("blazorschool-normal", "blazorschool", returnURL)'>Login as Normal User</button>
+<button @onclick='_ => BlazorSchoolAuthenticationStateProvider.LoginAsync("blazorschool-paid", "blazorschool", returnURL)'>Login as Paid User</button>

@@ -1,25 +1,18 @@
-﻿using Microsoft.AspNetCore.Components.Authorization;
+﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using System.Security.Claims;
 
 public class BlazorSchoolAuthenticationStateProvider : AuthenticationStateProvider
 {
     private readonly BlazorSchoolUserService _blazorSchoolUserService;
     public User? CurrentUser { get; set; } = new();
-    public BlazorSchoolAuthenticationStateProvider(BlazorSchoolUserService blazorSchoolUserService)
+    public NavigationManager _navigation;
+    public BlazorSchoolAuthenticationStateProvider(BlazorSchoolUserService blazorSchoolUserService, NavigationManager navigation)
     {
-        AuthenticationStateChanged += OnAuthenticationStateChangedAsync;
         _blazorSchoolUserService = blazorSchoolUserService;
+        _navigation = navigation;
     }
-    private async void OnAuthenticationStateChangedAsync(Task<AuthenticationState> task)
-    {
-        var authenticationState = await task;
-
-        if (authenticationState is not null)
-        {
-            CurrentUser = User.FromClaimsPrincipal(authenticationState.User);
-        }
-    }
-    public async Task LoginAsync(string username, string password)
+    public async Task LoginAsync(string username, string password ,string returnURL)
     {
         var principal = new ClaimsPrincipal();
         var user = await _blazorSchoolUserService.SendAuthenticateRequestAsync(username, password);
@@ -27,29 +20,42 @@ public class BlazorSchoolAuthenticationStateProvider : AuthenticationStateProvid
         if (user is not null)
         {
             principal = user.ToClaimsPrincipal();
+            CurrentUser = user;
+            NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(principal)));
+            // Redirect to return URL
+            if (!string.IsNullOrWhiteSpace(returnURL))
+            {
+                _navigation.NavigateTo(returnURL, forceLoad: true);
+            }
+            else
+            {
+                _navigation.NavigateTo("/", forceLoad: true);
+            }
         }
-
-        NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(principal)));
     }
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
         var principal = new ClaimsPrincipal();
-        var user = _blazorSchoolUserService.FetchUserFromBrowser();
+        var token = await _blazorSchoolUserService.GetTokenFromBrowserAsync();//AccessToken
 
-        if (!string.IsNullOrEmpty(user.Username))
+        if (!string.IsNullOrEmpty(token))
         {
-            var authenticatedUser = await _blazorSchoolUserService.SendAuthenticateRequestAsync(user.Username, user.Password);
+            var claimsPrincipal =  _blazorSchoolUserService.CreateClaimsPrincipalFromToken(token);
 
-            if (authenticatedUser is not null)
+            if (claimsPrincipal.Identity?.IsAuthenticated == true)
             {
-                principal = authenticatedUser.ToClaimsPrincipal();
+                principal = claimsPrincipal;
+                NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(principal)));
             }
+            var user = User.UserFromClaimPricipal(claimsPrincipal);
+            CurrentUser = user;
         }
         return new(principal);
     }
-    public void Logout()
+    public async Task Logout()
     {
-        _blazorSchoolUserService.ClearBrowserUserData();
+        CurrentUser = null;
+        await _blazorSchoolUserService.ClearBrowserUserData();
         NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(new())));
     }
 }

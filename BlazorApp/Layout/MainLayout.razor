@@ -1,12 +1,42 @@
 ﻿@inherits LayoutComponentBase
+@using Microsoft.AspNetCore.Authorization
+@inject BlazorSchoolAuthenticationStateProvider BlazorSchoolAuthenticationStateProvider
+@attribute [AllowAnonymous]
+@inject NavigationManager Navigation
+
+@code {
+    public string returnURL { get; set; }
+    protected override void OnInitialized()
+    {
+        var currentUrl = Navigation.ToBaseRelativePath(Navigation.Uri);
+        if (!string.IsNullOrEmpty(currentUrl))
+        {
+            returnURL = Uri.EscapeDataString("/" + currentUrl);
+        }
+        else
+        {
+            returnURL = "/";
+        }
+    }
+}
 <div class="page">
     <div class="sidebar">
         <NavMenu />
     </div>
-
     <main>
         <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+            <AuthorizeView>
+                <Authorized>
+                    Logged in as @context.User.FindFirst("unique_name")?.Value <a href="logout"><span class="bi bi-door-closed-fill" aria-hidden="true" style="vertical-align:middle"></span> Logout</a>
+                    <br />
+                    <div>Role: @string.Join(", ", @context.User.Claims.Where(x=>x.Type== "role").Select(c=>c.Value).ToList())</div>
+                </Authorized>
+                <NotAuthorized>
+                    <button @onclick='_ => BlazorSchoolAuthenticationStateProvider.LoginAsync("blazorschool-admin", "blazorschool", returnURL)'>Login as Admin</button>
+                    <button @onclick='_ => BlazorSchoolAuthenticationStateProvider.LoginAsync("blazorschool-normal", "blazorschool", returnURL)'>Login as Normal User</button>
+                    <button @onclick='_ => BlazorSchoolAuthenticationStateProvider.LoginAsync("blazorschool-paid", "blazorschool", returnURL)'>Login as Paid User</button>
+                </NotAuthorized>
+            </AuthorizeView>
         </div>
 
         <article class="content px-4">

@@ -9,8 +9,6 @@
         {
             <div>Authenticated</div>
             <div>User: @BlazorSchoolAuthenticationStateProvider.CurrentUser.Username</div>
-            <div>Password: @BlazorSchoolAuthenticationStateProvider.CurrentUser.Password</div>
-            <div>Age: @BlazorSchoolAuthenticationStateProvider.CurrentUser.Age</div>
             <div>Role: @string.Join(", ", BlazorSchoolAuthenticationStateProvider.CurrentUser.Roles)</div>
         }
     </Authorized>

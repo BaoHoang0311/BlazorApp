@@ -31,5 +31,17 @@ namespace BlazorAPI.Controllers
             })
             .ToArray();
         }
+        public class ExampleFormModel
+        {
+            public string? ExampleString { get; set; }
+            public string? ExampleString2 { get; set; }
+            public IFormFileCollection? ExampleFile { get; set; }
+        }
+
+        [HttpPost("UpFile")]
+        public async Task<IActionResult> UpFile([FromForm] ExampleFormModel data)
+        {
+            return Ok("Submit thanh cong");
+        }
     }
 }

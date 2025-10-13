@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -52,9 +51,9 @@ namespace BlazorAPI.Controllers
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                        new Claim("ID","123"),
-                        new Claim("name",model.Name),
-                        new Claim("hihi","Bao go hi hi"),
+                    new Claim("id","123"),
+                    new Claim(ClaimTypes.Name,model.Name),
+                    new Claim("hihi","Bao go hi hi"),
                 }),
                 Expires = DateTime.UtcNow.AddMinutes(2),
                 SigningCredentials = new(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
