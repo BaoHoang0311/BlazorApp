@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Google.Apis.Auth;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
@@ -34,6 +35,8 @@ namespace BlazorAPI.Controllers
 
         [JsonProperty("token_type")]
         public string TokenType { get; set; }
+        [JsonProperty("id_token")]
+        public string IdToken { get; set; }
     }
     public class UserInfo
     {
@@ -57,9 +60,14 @@ namespace BlazorAPI.Controllers
     [Route("[controller]")]
     public class AuthController : ControllerBase
     {
-        public AuthController()
+        private readonly IConfiguration _config;
+        private string clientId;
+        private string clientSecret;
+        public AuthController(IConfiguration configuration)
         {
-
+            _config = configuration;
+            clientId = _config["Authentication:Google:ClientId"];
+            clientSecret = _config["Authentication:Google:ClientSecret"];
         }
         /// <summary>
         ///     Login
@@ -119,20 +127,18 @@ namespace BlazorAPI.Controllers
         {
             var scopesssss = new List<string>()
             {
-                "https://www.googleapis.com/auth/drive.metadata.readonly",
-                "https://www.googleapis.com/auth/calendar.readonly",
-                "https://www.googleapis.com/auth/userinfo.email"
+                "https://www.googleapis.com/auth/userinfo.email",
+                "https://www.googleapis.com/auth/userinfo.profile",
             };
             string scopes = Uri.EscapeDataString(string.Join(" ", scopesssss));
             var authUrl = $"https://accounts.google.com/o/oauth2/v2/auth?" +
-                $"client_id=" +
+                $"client_id={clientId}" +
                 $"&redirect_uri=http://localhost:5259/call-back" +
                 $"&response_type=code" +
                 $"&scope={scopes}" +
                 $"&access_type=offline" +
                 $"&include_granted_scopes=true";
-
-            return Ok(Redirect(authUrl));
+            return Ok(authUrl);
         }
         [HttpGet("/call-back")]
         public async Task<IActionResult> Callback([FromQuery] string code)
@@ -143,7 +149,7 @@ namespace BlazorAPI.Controllers
             // Lưu token vào database/session
             // ...
 
-            return Ok(new { access_token = tokenResponse.AccessToken,refresh_token = tokenResponse.RefreshToken });
+            return Ok(tokenResponse);
         }
         [HttpPost("/info/{accesstoken}")]
         public async Task<IActionResult> GetInfo(string accesstoken)
@@ -157,8 +163,6 @@ namespace BlazorAPI.Controllers
         }
         private async Task<TokenGGResponse> ExchangeCodeForToken(string code)
         {
-            var clientId = "";
-            var clientSecret = "";
             var redirectUri = "http://localhost:5259/call-back";
             using var client = new HttpClient();
             var content = new FormUrlEncodedContent(new Dictionary<string, string>
@@ -173,6 +177,17 @@ namespace BlazorAPI.Controllers
             var json = await response.Content.ReadAsStringAsync();
             var token = JsonConvert.DeserializeObject<TokenGGResponse>(json);
             return token;
+        }
+        [HttpPost("/check-token")]
+        public async Task<IActionResult> CheckToken(string IdToken)
+        {
+            var payload = await CheckGGToken(IdToken);
+            return Ok(payload);
+        }
+        private async Task<GoogleJsonWebSignature.Payload> CheckGGToken(string IdToken)
+        {
+            GoogleJsonWebSignature.Payload payload = await GoogleJsonWebSignature.ValidateAsync(IdToken);
+            return payload;
         }
     }
 }

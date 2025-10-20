@@ -53,7 +53,7 @@ namespace BlazorAPI
             });
             builder.Services.AddSwaggerGen(options =>
             {
-                #region Bearer Authen 
+               #region Bearer Authen 
                 options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Description =
@@ -83,6 +83,7 @@ namespace BlazorAPI
                 });
                 #endregion
             });
+            builder.Services.AddHttpContextAccessor();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
             builder.Services.AddAuthentication(x =>
