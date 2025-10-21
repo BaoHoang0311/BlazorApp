@@ -39,11 +39,11 @@ public class GoogleAccessTokenAuthenticationHandler : AuthenticationHandler<Auth
             httpClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", accessToken);
 
-            var response = await httpClient.GetAsync("https://www.googleapis.com/oauth2/v3/userinfo");
-            if (!response.IsSuccessStatusCode)
-                return AuthenticateResult.Fail("Invalid Google Access Token");
+            //var response = await httpClient.GetAsync("https://www.googleapis.com/oauth2/v3/userinfo");
+            //if (!response.IsSuccessStatusCode)
+            //    return AuthenticateResult.Fail("Invalid Google Access Token");
 
-            var payload = await response.Content.ReadAsStringAsync();
+            //var payload = await response.Content.ReadAsStringAsync();
 
             var claims = new List<Claim>
             {
@@ -51,9 +51,9 @@ public class GoogleAccessTokenAuthenticationHandler : AuthenticationHandler<Auth
                 new Claim(ClaimTypes.Email, "tan.thach36@gmail.com")
             };
 
-            var identity = new ClaimsIdentity(claims, Scheme.Name);
+            var identity = new ClaimsIdentity(claims, "GoogleAccessToken");
             var principal = new ClaimsPrincipal(identity);
-            var ticket = new AuthenticationTicket(principal, Scheme.Name);
+            var ticket = new AuthenticationTicket(principal, "GoogleAccessToken");
 
             return AuthenticateResult.Success(ticket);
         }
