@@ -39,7 +39,7 @@ public class BlazorSchoolUserService
             string token = await response.Content.ReadAsStringAsync();
             var TokenResponse = JsonConvert.DeserializeObject<Token>(token);
             var claimPrincipal = CreateClaimsPrincipalFromToken(TokenResponse.AccessToken);
-            var user = User.UserFromClaimPricipal(claimPrincipal);
+            var user = User.FromClaimsPrincipal(claimPrincipal);
             await PersistUserToBrowser(TokenResponse.AccessToken);
 
             return user;

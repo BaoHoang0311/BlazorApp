@@ -35,9 +35,10 @@ public class GoogleAccessTokenAuthenticationHandler : AuthenticationHandler<Auth
         try
         {
             // 1️⃣ Gọi Google API để xác thực token
-            var httpClient = _httpClientFactory.CreateClient();
-            httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", accessToken);
+
+            //var httpClient = _httpClientFactory.CreateClient();
+            //httpClient.DefaultRequestHeaders.Authorization =
+            //    new AuthenticationHeaderValue("Bearer", accessToken);
 
             //var response = await httpClient.GetAsync("https://www.googleapis.com/oauth2/v3/userinfo");
             //if (!response.IsSuccessStatusCode)
@@ -48,7 +49,9 @@ public class GoogleAccessTokenAuthenticationHandler : AuthenticationHandler<Auth
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, "bao"),
-                new Claim(ClaimTypes.Email, "tan.thach36@gmail.com")
+                new Claim(ClaimTypes.Email, "tan.thach36@gmail.com"),
+                new Claim(ClaimTypes.Role, "Admin"),
+                new Claim(ClaimTypes.Role, "Cus"),
             };
 
             var identity = new ClaimsIdentity(claims, "GoogleAccessToken");

@@ -47,7 +47,7 @@ public class BlazorSchoolAuthenticationStateProvider : AuthenticationStateProvid
                 principal = claimsPrincipal;
                 NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(principal)));
             }
-            var user = User.UserFromClaimPricipal(claimsPrincipal);
+            var user = User.FromClaimsPrincipal(claimsPrincipal);
             CurrentUser = user;
         }
         return new(principal);
