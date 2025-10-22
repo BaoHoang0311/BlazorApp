@@ -12,7 +12,7 @@ public class BlazorSchoolAuthenticationStateProvider : AuthenticationStateProvid
         _blazorSchoolUserService = blazorSchoolUserService;
         _navigation = navigation;
     }
-    public async Task LoginAsync(string role ,string returnURL)
+    public async Task LoginAsync(string role,string returnURL)
     {
         var principal = new ClaimsPrincipal();
         var user = await _blazorSchoolUserService.SendAuthenticateRequestAsync("", "", role);

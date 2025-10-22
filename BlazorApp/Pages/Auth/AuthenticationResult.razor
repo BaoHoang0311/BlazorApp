@@ -1,8 +1,9 @@
 ﻿@page "/authentication-result"
 @using System.Security.Claims
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
 @inject BlazorSchoolAuthenticationStateProvider BlazorSchoolAuthenticationStateProvider
-
+@attribute [Authorize]
 <AuthorizeView>
     <Authorized>
         @if (BlazorSchoolAuthenticationStateProvider.CurrentUser is not null)
@@ -33,4 +34,23 @@
     <Authorized>
         <div>Content for admin users.</div>
     </Authorized>
+</AuthorizeView>
+
+
+<AuthorizeView Policy="AdultAdminOnly">
+    <Authorized>
+        <div>Content for users in adult policy.</div>
+    </Authorized>
+    <NotAuthorized>
+        <div>This content is for adult.</div>
+    </NotAuthorized>
+</AuthorizeView>
+
+<AuthorizeView Policy="EsrbPolicy" Resource="13">
+    <Authorized>
+        <div>Content for users in esrb policy with age 13+.</div>
+    </Authorized>
+    <NotAuthorized>
+        <div>This content is for 13+ user only.</div>
+    </NotAuthorized>
 </AuthorizeView>

@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Json;
+﻿using Microsoft.AspNetCore.Authorization;
+using System.Net.Http.Json;
 using static BlazorApp.Pages.Weather;
 
 namespace BlazorApp.Model

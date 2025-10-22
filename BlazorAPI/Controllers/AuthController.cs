@@ -104,6 +104,7 @@ namespace BlazorAPI.Controllers
                     new Claim(ClaimTypes.Name,model.Name),
                     new Claim("hihi","Bao go hi hi"),
                     new Claim(ClaimTypes.Role,data.Role),
+                    new Claim("age", 18.ToString())
                 }),
                 Expires = DateTime.UtcNow.AddMinutes(2),
                 SigningCredentials = new(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
