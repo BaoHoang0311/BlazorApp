@@ -15,3 +15,22 @@
     <Authorizing><div>Loading...</div></Authorizing>
     <NotAuthorized><div>Not authenticated</div></NotAuthorized>
 </AuthorizeView>
+
+
+<AuthorizeView Roles="normal,paid">
+    <Authorized>
+        <div>Content for users with either normal or paid or both roles.</div>
+    </Authorized>
+</AuthorizeView>
+
+<AuthorizeView Roles="paid">
+    <Authorized>
+        <div>Content for paid users.</div>
+    </Authorized>
+</AuthorizeView>
+
+<AuthorizeView Roles="admin">
+    <Authorized>
+        <div>Content for admin users.</div>
+    </Authorized>
+</AuthorizeView>

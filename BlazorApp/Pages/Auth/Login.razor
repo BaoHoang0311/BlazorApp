@@ -19,6 +19,6 @@
     }
 }
 <h3>Login</h3>
-<button @onclick='_ => BlazorSchoolAuthenticationStateProvider.LoginAsync("blazorschool-admin", "blazorschool",returnURL)'>Login as Admin</button>
-<button @onclick='_ => BlazorSchoolAuthenticationStateProvider.LoginAsync("blazorschool-normal", "blazorschool", returnURL)'>Login as Normal User</button>
-<button @onclick='_ => BlazorSchoolAuthenticationStateProvider.LoginAsync("blazorschool-paid", "blazorschool", returnURL)'>Login as Paid User</button>
+<button @onclick='_ => BlazorSchoolAuthenticationStateProvider.LoginAsync("admin", returnURL)'>Login as Admin</button>
+<button @onclick='_ => BlazorSchoolAuthenticationStateProvider.LoginAsync("normal", returnURL)'>Login as Normal User</button>
+<button @onclick='_ => BlazorSchoolAuthenticationStateProvider.LoginAsync("paid", returnURL)'>Login as Paid User</button>

@@ -9,6 +9,7 @@ public class LoginDTO
 {
     public string? Name { get;set;}
     public string? Password { get;set; }
+    public string Role { get; set; }
 }
 public class Token
 {
@@ -25,12 +26,13 @@ public class BlazorSchoolUserService
         _httpClient = httpClient;
         _localStorage = localStorage;
     }
-    public async Task<User?> SendAuthenticateRequestAsync(string username, string password)
+    public async Task<User?> SendAuthenticateRequestAsync(string username, string password, string role)
     {
         var data = new LoginDTO()
         {
             Name = "bao",
-            Password= "bao"
+            Password= "bao",
+            Role = role
         };
         var response = await _httpClient.PostAsJsonAsync<LoginDTO>($"http://localhost:5259/login",data);
 
@@ -39,7 +41,7 @@ public class BlazorSchoolUserService
             string token = await response.Content.ReadAsStringAsync();
             var TokenResponse = JsonConvert.DeserializeObject<Token>(token);
             var claimPrincipal = CreateClaimsPrincipalFromToken(TokenResponse.AccessToken);
-            var user = User.FromClaimsPrincipal(claimPrincipal);
+            var user = User.UserFromClaimPricipal(claimPrincipal);
             await PersistUserToBrowser(TokenResponse.AccessToken);
 
             return user;
@@ -54,8 +56,16 @@ public class BlazorSchoolUserService
 
         if (tokenHandler.CanReadToken(token))
         {
-            var jwtSecurityToken = tokenHandler.ReadJwtToken(token);
-            identity = new(jwtSecurityToken.Claims, "Blazor School");
+            var jwtToken = tokenHandler.ReadJwtToken(token);
+            var claims = jwtToken.Claims.Select(c =>
+            {
+                if (c.Type == "role") // 👈 map thủ công
+                    return new Claim(ClaimTypes.Role, c.Value);
+                if (c.Type == "unique_name")
+                    return new Claim(ClaimTypes.Name, c.Value);
+                return c;
+            }).ToList();
+            identity = new(claims, "Blazor School");
         }
 
         return new(identity);

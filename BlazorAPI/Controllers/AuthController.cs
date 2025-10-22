@@ -74,20 +74,26 @@ namespace BlazorAPI.Controllers
         /// </summary>
         /// <param name="Name">Nhập name </param>
         /// <param name="Password">Nhập pass</param>
+        /// <param name="Role">Nhập pass</param>
         /// <returns></returns>
+        public class LoginDTO
+        {
+            public string Name { get; set; }
+            public string Password { get;set;}
+            public string Role { get;set;}
+        }
         [HttpPost("/login")]
-        public async Task<IActionResult> Login(string Name ="bao", string Password= "bao")
+        public async Task<IActionResult> Login([FromBody]LoginDTO data)
         {
             var model = new LoginDTO
             {
-                Name = Name ,
-                Password = Password,
+                Name = data.Name ,
+                Password = data.Password,
             };
 
             if (model.Name != "bao") return NotFound("password sai");
 
             #region CreateToken
-
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes("this_is_my_secret_keyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
             var tokenDes = new SecurityTokenDescriptor
@@ -97,15 +103,18 @@ namespace BlazorAPI.Controllers
                     new Claim("id","123"),
                     new Claim(ClaimTypes.Name,model.Name),
                     new Claim("hihi","Bao go hi hi"),
+                    new Claim(ClaimTypes.Role,data.Role),
                 }),
                 Expires = DateTime.UtcNow.AddMinutes(2),
                 SigningCredentials = new(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
             };
-            var roles =new string[] {"Admin", "User" };
-            foreach (var role in roles)
-            {
-                tokenDes.Subject.AddClaim(new Claim(ClaimTypes.Role, role));
-            }
+
+            //var roles =new string[] {"Admin", "User" };
+            //foreach (var role in roles)
+            //{
+            //    tokenDes.Subject.AddClaim(new Claim(ClaimTypes.Role, role));
+            //}
+
             var token = tokenHandler.CreateToken(tokenDes);
             #endregion
             var accessToken = tokenHandler.WriteToken(token);

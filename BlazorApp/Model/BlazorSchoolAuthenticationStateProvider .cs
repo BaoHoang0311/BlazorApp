@@ -12,10 +12,10 @@ public class BlazorSchoolAuthenticationStateProvider : AuthenticationStateProvid
         _blazorSchoolUserService = blazorSchoolUserService;
         _navigation = navigation;
     }
-    public async Task LoginAsync(string username, string password ,string returnURL)
+    public async Task LoginAsync(string role ,string returnURL)
     {
         var principal = new ClaimsPrincipal();
-        var user = await _blazorSchoolUserService.SendAuthenticateRequestAsync(username, password);
+        var user = await _blazorSchoolUserService.SendAuthenticateRequestAsync("", "", role);
 
         if (user is not null)
         {
@@ -47,7 +47,7 @@ public class BlazorSchoolAuthenticationStateProvider : AuthenticationStateProvid
                 principal = claimsPrincipal;
                 NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(principal)));
             }
-            var user = User.FromClaimsPrincipal(claimsPrincipal);
+            var user = User.UserFromClaimPricipal(claimsPrincipal);
             CurrentUser = user;
         }
         return new(principal);

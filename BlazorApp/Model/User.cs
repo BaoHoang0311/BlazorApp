@@ -13,7 +13,7 @@ public class User
         };
         foreach (var r in Roles)
         {
-            claim.Add(new Claim(ClaimTypes.Role,r));
+            claim.Add(new Claim("role",r));
         }
         var identity = new ClaimsIdentity(claim, "Blazor School");
         return new ClaimsPrincipal(identity);
