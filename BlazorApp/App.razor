@@ -1,17 +1,10 @@
 ﻿<CascadingAuthenticationState>
     <Router AppAssembly="@typeof(App).Assembly">
         <Found Context="routeData">
-            <AuthorizeRouteView RouteData="@routeData" 
+            <AuthorizeRouteView RouteData="@routeData"
                                 DefaultLayout="@typeof(MainLayout)">
                 <NotAuthorized>
-                    @if (context.User.Identity?.IsAuthenticated ?? false)
-                    {
-                        <p>Bạn không có quyền truy cập trang này.</p>
-                    }
-                    else
-                    {
-                        <BlazorApp.Pages.Auth.RedirectToLogin></BlazorApp.Pages.Auth.RedirectToLogin>
-                    }
+                    <BlazorApp.Pages.Auth.RedirectToLogin></BlazorApp.Pages.Auth.RedirectToLogin>
                 </NotAuthorized>
                 <Authorizing>
                     <div>Authorizing...</div>

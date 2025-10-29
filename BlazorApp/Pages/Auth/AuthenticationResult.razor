@@ -4,6 +4,7 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @inject BlazorSchoolAuthenticationStateProvider BlazorSchoolAuthenticationStateProvider
 @attribute [Authorize]
+
 <AuthorizeView>
     <Authorized>
         @if (BlazorSchoolAuthenticationStateProvider.CurrentUser is not null)
