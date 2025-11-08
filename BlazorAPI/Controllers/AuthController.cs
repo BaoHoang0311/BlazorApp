@@ -19,7 +19,7 @@ namespace BlazorAPI.Controllers
         public string AccessToken { get;set;}
         public string RefreshToken { get; set; }
     }
-    public class TokenGGResponse
+    public class  TokenGGResponse
     {
         [JsonProperty("access_token")]
         public string AccessToken { get; set; }

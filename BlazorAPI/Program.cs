@@ -9,7 +9,6 @@ using System.Text;
 
 namespace BlazorAPI
 {
-
     public class Program
     {
         public static void Main(string[] args)
@@ -25,11 +24,7 @@ namespace BlazorAPI
                 builder.WithOrigins(allowedOrigins).SetIsOriginAllowedToAllowWildcardSubdomains().AllowAnyHeader().AllowAnyMethod();
             }));
 
-            builder.Services.AddControllers(options =>
-            {
-                //    options.ReturnHttpNotAcceptable = true;
-            })
-            .AddXmlDataContractSerializerFormatters();
+            builder.Services.AddControllers().AddXmlDataContractSerializerFormatters();
 
             builder.Services.AddSwaggerGen(c =>
             {
@@ -94,7 +89,7 @@ namespace BlazorAPI
             //})
             //.AddJwtBearer(x =>
             //{
-            //     x.SaveToken = true;
+            //     x.SaveToken = true; // var token =  HttpContext.GetTokenAsync("access_token");
             //     x.RequireHttpsMetadata = false;
             //     x.TokenValidationParameters = new TokenValidationParameters
             //     {
@@ -103,35 +98,10 @@ namespace BlazorAPI
             //         ValidateIssuer = false,
             //         ValidateAudience = false
             //     };
-
-            //     #region Check Redis
-            //     //x.Events = new JwtBearerEvents
-            //     //{
-            //     //    OnTokenValidated = async context =>
-            //     //    {
-            //     //        var redis = context.HttpContext.RequestServices.GetRequiredService<IConnectionMultiplexer>();
-            //     //        var db = redis.GetDatabase();
-
-            //     //        var token = context.SecurityToken.RawData;
-
-            //     //        // Giả sử bạn lưu token hợp lệ vào Redis theo key: "valid_tokens:{token}"
-            //     //        bool exists = await db.KeyExistsAsync($"valid:tokens:{token}");
-            //     //        if (!exists)
-            //     //        {
-            //     //            context.Fail("Token không tồn tại hoặc đã bị thu hồi.");
-            //     //        }
-            //     //    },
-            //     //    OnAuthenticationFailed = context =>
-            //     //    {
-            //     //        Console.WriteLine("JWT Authentication Failed: " + context.Exception.Message);
-            //     //        return Task.CompletedTask;
-            //     //    }
-            //     //};
-            //     #endregion
             //});
             #endregion
 
-            #region Custome Auth 
+            #region Google Auth 
             builder.Services.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = "GoogleAccessToken";
