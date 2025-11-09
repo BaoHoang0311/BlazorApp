@@ -36,15 +36,15 @@ public class GoogleAccessTokenAuthenticationHandler : AuthenticationHandler<Auth
         {
             // 1️⃣ Gọi Google API để xác thực token
 
-            var httpClient = _httpClientFactory.CreateClient();
-            httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", accessToken);
+            //var httpClient = _httpClientFactory.CreateClient();
+            //httpClient.DefaultRequestHeaders.Authorization =
+            //    new AuthenticationHeaderValue("Bearer", accessToken);
 
-            var response = await httpClient.GetAsync("https://www.googleapis.com/oauth2/v3/userinfo");
-            if (!response.IsSuccessStatusCode)
-                return AuthenticateResult.Fail("Invalid Google Access Token");
+            //var response = await httpClient.GetAsync("https://www.googleapis.com/oauth2/v3/userinfo");
+            //if (!response.IsSuccessStatusCode)
+            //    return AuthenticateResult.Fail("Invalid Google Access Token");
 
-            var payload = await response.Content.ReadAsStringAsync();
+            //var payload = await response.Content.ReadAsStringAsync();
 
             var claims = new List<Claim>
             {
@@ -52,6 +52,7 @@ public class GoogleAccessTokenAuthenticationHandler : AuthenticationHandler<Auth
                 new Claim(ClaimTypes.Email, "tan.thach36@gmail.com"),
                 new Claim(ClaimTypes.Role, "Admin"),
                 new Claim(ClaimTypes.Role, "Cus"),
+                new Claim("age", 18.ToString())
             };
 
             var identity = new ClaimsIdentity(claims, "GoogleAccessToken");

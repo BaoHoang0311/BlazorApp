@@ -110,12 +110,6 @@ namespace BlazorAPI.Controllers
                 SigningCredentials = new(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
             };
 
-            //var roles =new string[] {"Admin", "User" };
-            //foreach (var role in roles)
-            //{
-            //    tokenDes.Subject.AddClaim(new Claim(ClaimTypes.Role, role));
-            //}
-
             var token = tokenHandler.CreateToken(tokenDes);
             #endregion
             var accessToken = tokenHandler.WriteToken(token);

@@ -80,7 +80,7 @@ public class EsrbRequirementHandler : AuthorizationHandler<EsrbRequirement>
         }
         else
         {
-            context.Fail();
+            context.Fail(new AuthorizationFailureReason(this, "dasdasdsad"));
         }
 
         return Task.CompletedTask;

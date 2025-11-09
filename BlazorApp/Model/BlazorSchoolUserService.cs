@@ -40,7 +40,7 @@ public class BlazorSchoolUserService
         {
             string token = await response.Content.ReadAsStringAsync();
             var TokenResponse = JsonConvert.DeserializeObject<Token>(token);
-            var claimPrincipal = CreateClaimsPrincipalFromToken(TokenResponse.AccessToken);// get claim from token
+            var claimPrincipal = MapClaimsPrincipalFromToken(TokenResponse.AccessToken);// get claim from token
             var user = User.UserFromClaimPricipal(claimPrincipal);
             await PersistUserToBrowser(TokenResponse.AccessToken);
 
@@ -49,7 +49,7 @@ public class BlazorSchoolUserService
 
         return null;
     }
-    public ClaimsPrincipal CreateClaimsPrincipalFromToken(string token)
+    public ClaimsPrincipal MapClaimsPrincipalFromToken(string token)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var identity = new ClaimsIdentity();

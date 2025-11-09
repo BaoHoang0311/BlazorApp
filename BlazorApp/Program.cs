@@ -13,7 +13,11 @@ builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddScoped<BlazorSchoolUserService>();
 builder.Services.AddScoped<BlazorSchoolAuthenticationStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider>(sp => sp.GetRequiredService<BlazorSchoolAuthenticationStateProvider>());
+
 builder.Services.AddScoped<IAuthorizationHandler, AdultRequirementHandler>();
+
+builder.Services.AddScoped<IAuthorizationHandler, EsrbRequirementHandler>();
+
 builder.Services.AddAuthorizationCore(config =>
 {
     config.AddPolicy("AdultAdminOnly", policy =>
@@ -22,7 +26,6 @@ builder.Services.AddAuthorizationCore(config =>
         policy.RequireRole("admin");
     });
     config.AddPolicy("EsrbPolicy", policy => policy.AddRequirements(new EsrbRequirement()));
-
 });
 
 builder.Services.AddHttpClient<SecondApiHttpClientWrapper>(httpClient => httpClient.BaseAddress = new("http://localhost:5259"));

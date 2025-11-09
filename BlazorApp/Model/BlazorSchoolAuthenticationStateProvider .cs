@@ -40,7 +40,7 @@ public class BlazorSchoolAuthenticationStateProvider : AuthenticationStateProvid
 
         if (!string.IsNullOrEmpty(token))
         {
-            var claimsPrincipal =  _blazorSchoolUserService.CreateClaimsPrincipalFromToken(token);
+            var claimsPrincipal =  _blazorSchoolUserService.MapClaimsPrincipalFromToken(token);
 
             if (claimsPrincipal.Identity?.IsAuthenticated == true)
             {
