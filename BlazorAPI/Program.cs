@@ -59,6 +59,7 @@ namespace BlazorAPI
                         "Example: \"12345abcdef\"",
                     Name = "Authorization",
                     In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.Http, // "prefix" : "Bearer"
                     Scheme = "Bearer"
                 });
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement()
